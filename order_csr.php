@@ -3,117 +3,43 @@
 <html>
   <head>
   <meta http-equiv="content-type" content="text/html; charset=windows-1250">
-  <title>Onecert</title>
+  <title>OneCert CSR-Generator</title>
   </head>
-  <body text="#202040" bgcolor="#C0C0C0">
+ <body text="#202040" bgcolor="#C0C0C0">
   
   <?php
-	//Formular für das Bestellen eines SAN Zertifikats
-	
-	// Einbinden der funktionen.php
+  
+	//Einbinden der funktionen.php
 	require_once('funktionen.php');
+	checklogin();	
 	
-	// Prüfen ob ein User eingeloggt ist
-	checklogin();
-	
-	//Übergabe Username
-	$_username = $_SESSION['username'];
-	
-	//SQL Statement um Daten des Users aus der Datenbenk zu holen
-	$_sql = "SELECT * 
-			FROM 	kunde 
-			WHERE 	username ='$_username';";
-			
-	//DB Abfrage ausführen		
-	$_erg = DBQuery($_sql);
-
-	// Daten in Array schreiben
-	$_daten = mysqli_fetch_array( $_erg, MYSQL_ASSOC);
-
-	// Daten des Users ausgeben
-	
-  echo '<h1>OneCert - Bestellung</h1>
-    <form enctype="multipart/form-data" name="Formular" action="form_order.php" method="post" onsubmit="return chkFormular()">
+	// Diese Seite dient zur Generierung eines neuen CSRs
+	//Formular um die benötigten CSR Daten einzugeben und Übergabe an gen_csr
+   echo '<h2>OneCert - CSR Generator</h2>
+	<form name="csrgen" action="gen_csr.php" method="post" onsubmit="return chkFormular()">
       <fieldset>                              
-        <legend><h3>Kontaktdaten</h3></legend>
-        <table>
+        <legend><h3>Bitte geben Sie Ihre Zertifikatsdaten ein:</h3></legend>
+ 		<table>
           <tr>
-            <td style="text-align:right;">Nachname:</td>
-            <td><b>' . $_daten["kname"] . '</b></td>
+            <td style="text-align:right;">Domainname: </td>
+            <td><input type="text" name="cdomain" size="20"/> (bei Wildcard z.B. *.test.com)</td>
           </tr>
 		  <tr>
-            <td style="text-align:right;">Vorname:</td>
-            <td><b>' . $_daten["kvname"] . '</b></td>
+            <td style="text-align:right;">Organisation: </td>
+            <td><input type="text" name="corganisation" size="20"/></td>
           </tr>
 		  <tr>
-            <td style="text-align:right;">Strasse:</td>
-            <td><b>' . $_daten["kstrasse"] . '</b></td>
-			<td style="text-align:right;">Hausnummer:</td>
-            <td><b>' . $_daten["khausnummer"] . '</b></td>
+            <td style="text-align:right;">Abteilung: </td>
+            <td><input type="text" name="cabteilung" size="20"/></td>
 		  </tr>
 		  <tr>
-            <td style="text-align:right;">PLZ:</td>
-            <td><b>' . $_daten["kplz"] . '</b></td>
-			<td style="text-align:right;">Ort:</td>
-            <td><b>' . $_daten["kort"] . '</b></td>
-          </tr>
-		  <tr>
-            <td style="text-align:right;">Land:</td> 
-            <td><b>' . $_daten["kland"] . '</b></td>
-          </tr>
-		  <tr>
-            <td style="text-align:right;">Region:</td>
-            <td><b>' . $_daten["kregion"] . '</b></td>
-          </tr>
-		  <tr>
-            <td style="text-align:right;">Telefonnummer:</td>
-            <td><b>' . $_daten["ktelefon"] . '</b></td>
-          </tr>
-		  <tr>
-            <td style="text-align:right;">Mail:</td>
-            <td><b>' . $_daten["kmail"] . '</b></td>
-          </tr>
-        </table>
-      </fieldset>
-      <br>
-      <fieldset>
-        <legend><h3>SAN Serverzertifikat</h3></legend>
-
-
-				<!-- Upload-Feld für die CSR DAtei -->
-				<input type="hidden" name="MAX_FILE_SIZE" value="5000" />
-				<!-- Der Name des Input Felds bestimmt den Namen im $_FILES Array -->
-				 CSR-Datei hochladen: <input name="userfile" type="file" accept="csr"/>
-
-		<!--<table>
-          <tr>
-            <td style="text-align:right;">Server Name</td>
-            <td><input type="text" name="zsname" size="10"/></td>
-			<td style="text-align:right;">SAN 1</td>
-            <td><input type="text" name="zdns1" size="10"/></td>
-          </tr>
-		  <tr>
-            <td style="text-align:right;">Organisation</td>
-            <td><input type="text" name="zorganisation" size="10"/></td>
-			<td style="text-align:right;">SAN 2</td>
-            <td><input type="text" name="zdns2" size="10"/></td>
-          </tr>
-		  <tr>
-            <td style="text-align:right;">Ort</td>
-            <td><input type="text" name="zort" size="10"/></td>
-			<td style="text-align:right;">SAN 3</td>
-            <td><input type="text" name="zdns3" size="10"/></td>
-          </tr>
-		  <tr>
-            <td style="text-align:right;">Region</td>
-            <td><input type="text" name="zregion" size="10"/></td>
-			<td style="text-align:right;">SAN 4</td>
-            <td><input type="text" name="zdns4" size="10"/></td>
+            <td style="text-align:right;">Bundesland / Provinz: </td>
+            <td><input type="text" name="cprovinz" size="20"/></td>
           </tr>
 		  <tr>
             <td style="text-align:right;">Land</td> 
             <td>
-              <select name="zland" size="1">
+              <select name="cland" size="1">
 				<option value="AF">Afghanistan</option>
 				<option value="EG">&Auml;gypten</option>
 				<option value="AX">Aland</option>
@@ -158,7 +84,7 @@
 				<option value="CR">Costa Rica</option>
 				<option value="CI">Cote d\'Ivoire</option>
 				<option value="DK">D&auml;nemark</option>
-				<option value="DE">Deutschland</option>
+				<option value="DE" selected="DE">Deutschland</option>
 				<option value="DG">Diego Garcia</option>
 				<option value="DM">Dominica</option>
 				<option value="DO">Dominikanische Republik</option>
@@ -358,41 +284,63 @@
 				<option value="CY">Zypern</option>
 				</select>
             </td>
-			<td style="text-align:right;">SAN 5</td>
-            <td><input type="text" name="zdns5" size="10"/></td>
           </tr>
 		  <tr>
-            <td style="text-align:right;">Key</td> 
-            <td>
-              <select name="zkey" size="1">
-                <option value="2048">2048 (empfohlen)</option>
-                <option value="4096">4096</option>
-              </select>
-            </td>
+			<td style="text-align:right;">Ort: </td>
+            <td><input type="text" name="cort" size="20"/></td>		  
+		  </tr>
+		  <tr>
+            <td style="text-align:right;">Schl&uuml;ssel-Gr&ouml;sse:</td>            
+              <td><select name="ckey" size="1">
+				<option value="2048">2048</option>
+				<option value="4096">4096</option>
+				</select>
+			</td>				
           </tr>
-		  <tr>-->
-			<p>Laufzeit &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-              <select name="zdays" size="1">
-                <option value="365">1 Jahr</option>
-                <option value="1095">3 Jahre</option>
-				<option value="1825">5 Jahre</option>
-              </select>
-			  <p/>
-            <!--
+		  <tr>
+            <td style="text-align:right;">E-Mail</td>
+            <td><input type="text" name="cmail" size="20"/></td>
           </tr>
-        </table> -->
+        </table>
       </fieldset>
+		
+	  <fieldset>
+        <legend><h3>Bei SAN-Bestellung bitte hier ihre zus&auml;tzlichen Domains angeben:</h3></legend>
+ 		<table>
+          <tr>
+            <td style="text-align:right;">Domainname 1: </td>
+            <td><input type="text" name="san1" size="20"/></td>
+          </tr>
+          <tr>
+            <td style="text-align:right;">Domainname 2: </td>
+            <td><input type="text" name="san2" size="20"/></td>
+          </tr>
+          <tr>
+            <td style="text-align:right;">Domainname 3: </td>
+            <td><input type="text" name="san3" size="20"/></td>
+          </tr>
+          <tr>
+            <td style="text-align:right;">Domainname 4: </td>
+            <td><input type="text" name="san4" size="20"/></td>
+          </tr>
+          <tr>
+            <td style="text-align:right;">Domainname 5: </td>
+            <td><input type="text" name="san5" size="20"/></td>
+          </tr>
+          <tr>
+            <td style="text-align:right;">Domainname 6: </td>
+            <td><input type="text" name="san6" size="20"/></td>
+          </tr>		  
+		  </table>
+      </fieldset>
+
       <br>
-	  <input name="ztype" type="hidden" value="typ_san" />
-      <input type="submit" value="Bestellen"/>
+      <input type="submit" value="CSR generieren"/>
       <input type="reset" value="Verwerfen"/>
     </form>
 	<br />
 	<fieldset>                          
-						<a href="uebersicht.php"> Zur&uumlck zur &Uumlbersicht</a>
-					</fieldset>
-					<br />
-	<fieldset>                          
+			<a href="uebersicht.php">Zur&uuml;ck zur &Uuml;bersicht </a>
 			<a href="logout.php">Logout</a>
       </fieldset>';
 	?>
