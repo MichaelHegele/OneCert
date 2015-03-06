@@ -9,24 +9,17 @@
   <h1>OneCert - Bestellung</h1>
   
   <?php
-	//Formular für das Bestellen eines Wildcard-Zertifikats
-	
-	// Einbinden der funktionen.php
 	require_once('funktionen.php');
 	checklogin();
 	
-	//Username übergeben
 	$_username = $_SESSION['username'];
 	
-	//SQL Statement
 	$_sql = "SELECT * 
 			FROM 	kunde 
 			WHERE 	username ='$_username';";
-	
-	// DB Abfrage ausführen
+			
 	$_erg = DBQuery($_sql);
-	
-	// Daten des Users aus der DB holen und ausgeben
+
 	$_daten = mysqli_fetch_array( $_erg, MYSQL_ASSOC);
   
     echo '<form enctype="multipart/form-data" name="Formular" action="form_order.php" method="post" onsubmit="return chkFormular()">

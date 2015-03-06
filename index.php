@@ -8,16 +8,9 @@
   <body text="#202040" bgcolor="#C0C0C0">
   
   <?php
-	
-	// Diese Seite dient zur Produktauswahl zwischen Standard, San und Wildcard Zertifikat
-	
-	// Einbinden der funktionen.php
 	require_once('funktionen.php');
-	
-	//Überprüfen ob ein User eingeloggt ist	
 	checklogin();
   
-	// Produktauswahl über ein Formular
   echo '<h1>OneCert Produktauswahl:</h1>
       <fieldset>                              
         <legend><h3>Bitte w&auml;hlen Sie das gew&uuml;nschte Zertifikat aus</h3></legend>

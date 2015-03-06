@@ -1,8 +1,7 @@
 <?php
-	//Funktion um Verbindung zur Datenbank onecert herzustellen
+
 	function DBQuery($_sql)
     {
-		// File mit Verbindungsdaten zur MYSQL Datenbank
         require_once ('konfiguration.php');
         $_db = mysqli_connect ( MYSQL_HOST, MYSQL_BENUTZER, MYSQL_KENNWORT, MYSQL_DATENBANK );
         if(!$_db)
@@ -24,31 +23,6 @@
         }
     }
 	
-	//Funktion um Verbindung zur Datenbank onecert_admin herzustellen
-	function DBaQuery($_sql)
-    {
-		// File mit Verbindungsdaten zur MYSQL Datenbank
-        require_once ('akonfiguration.php');
-        $_db = mysqli_connect ( MYSQL_HOST, MYSQL_BENUTZER, MYSQL_KENNWORT, MYSQL_DATENBANK );
-        if(!$_db)
-        {
-            echo '<p>Verbindung zur Datenbank nicht m&oumlglich!</p>';
-        }
-        else
-        {
-            $_erg = mysqli_query($_db, $_sql);
-            if(!$_erg)
-            {
-                echo '<p>Fehler in der Abfrage. Die Abfrage konnte nicht ausgef&uumlhrt werden!</p>';
-            }
-            else
-            {  
-                return $_erg;
-            }
-            mysqli_close($_db);
-        }
-    }
-	// Prüfen ob ein User eingeloggt ist, wenn nicht auf login.php bleiben
 	function checklogin()
 	{
 		session_start();
@@ -61,9 +35,7 @@
 			exit;
 		}
 	}
-	// Funktion für den Download der gebundenen Zip-Dateien
 	
-	/*Funktion würde den direkten Download der .crt Datei ermöglichen
 	function download($_path, $_domain)
 	{
 		$downloadfile = $_path . $_domain . ".crt";
@@ -80,7 +52,7 @@
 		readfile($downloadfile);
 		exit;
 
-	}*/
+	}
 	
 	function downloadzip($_path, $_domain)
 	{

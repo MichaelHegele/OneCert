@@ -8,30 +8,19 @@
   <body text="#202040" bgcolor="#C0C0C0">
   
   <?php
-	//Formular für das Bestellen eines SAN Zertifikats
-	
-	// Einbinden der funktionen.php
 	require_once('funktionen.php');
-	
-	// Prüfen ob ein User eingeloggt ist
 	checklogin();
 	
-	//Übergabe Username
 	$_username = $_SESSION['username'];
 	
-	//SQL Statement um Daten des Users aus der Datenbenk zu holen
 	$_sql = "SELECT * 
 			FROM 	kunde 
 			WHERE 	username ='$_username';";
 			
-	//DB Abfrage ausführen		
 	$_erg = DBQuery($_sql);
 
-	// Daten in Array schreiben
 	$_daten = mysqli_fetch_array( $_erg, MYSQL_ASSOC);
-
-	// Daten des Users ausgeben
-	
+  
   echo '<h1>OneCert - Bestellung</h1>
     <form enctype="multipart/form-data" name="Formular" action="form_order.php" method="post" onsubmit="return chkFormular()">
       <fieldset>                              

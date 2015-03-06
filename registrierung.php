@@ -10,13 +10,11 @@
     <h2>Onecert Registrierung</h2>
 
 	<?php
-	  // Registrierungsseite und Daten in Datenbank aufnehmen
+	  
 	  if(isset($_POST["kname"]) && isset($_POST["kvname"]) && isset($_POST["kstrasse"]) && isset($_POST["khausnummer"]) && isset($_POST["kplz"]) && isset($_POST["kort"]) && isset($_POST["kregion"]) && isset($_POST["ktelefon"]) && isset($_POST["kmail"]) && isset($_POST["username"]) && isset($_POST["passwort"]) && isset($_POST["passwortcheck"]) && $_POST["kname"] != "" && $_POST["kvname"] != ""  && $_POST["kstrasse"] != ""  && $_POST["khausnummer"] != ""  && $_POST["kplz"] != ""  && $_POST["kort"] != "" && $_POST["kregion"] != ""  && $_POST["ktelefon"]!= "" && $_POST["kmail"] != ""  && $_POST["username"] != ""  && $_POST["passwort"] != "" && $_POST["passwortcheck"] != "")
 	  {	
-		// Passwort und Bestätigung auf Übereinstimmung prüfen
 		if($_POST["passwort"] == $_POST["passwortcheck"])
 		{
-			//POST Variablen übergeben
 			$_kname = $_POST["kname"];
 			$_kvname = $_POST["kvname"];
 			$_kstrasse = $_POST["kstrasse"];
@@ -31,21 +29,15 @@
 			$_passwort = hash('sha512', $_POST["passwort"]);
 			$_passwortcheck = $_POST["passwortcheck"];
 			
-			//SQL Statement
 			$_sql = "INSERT INTO `kunde` (`kname` ,`kvname` ,`kstrasse`, `khausnummer`, `kplz`, `kort`, `kland`, `kregion`, `ktelefon`, `kmail`, `username`, `passwort`)
                  VALUES ('$_kname',  '$_kvname', '$_kstrasse', '$_khausnr', '$_kplz', '$_kort', '$_kland', '$_kregion', '$_ktelefon', '$_kmail', '$_username', '$_passwort')";
              
-			// Einbinden der funktionen.php
 			require_once('funktionen.php');
-			
-			// Insert ausführen
             //$_erg = DBQuery($_sql);
 
 				session_start();
 				//$_SESSION['onecert'] = true;
 				
-				
-				//Weiterleitung zur Übersichtsseite
 				$_host  = $_SERVER['HTTP_HOST'];
 				$_uri   = rtrim(dirname($_SERVER['PHP_SELF']), '/\\');
 				$_extra = 'uebersicht.php';

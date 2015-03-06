@@ -4,8 +4,8 @@
 define ( 'MYSQL_HOST',      'localhost' );
  
 // Daten
-define ( 'MYSQL_BENUTZER',  'onecert' );
-define ( 'MYSQL_KENNWORT',  'onecert' );
+define ( 'MYSQL_BENUTZER',  'root' );
+define ( 'MYSQL_KENNWORT',  'WWI2012a4' );
 
 //DB
 define ( 'MYSQL_DATENBANK', 'onecert' );

@@ -10,36 +10,25 @@
     <h2>Onecert Login</h2>
 
 	<?php 
-	// Diese Seite dient zum Login eines Users
-	
 	echo '<fieldset>  
 		<legend><h3>Anmeldedaten</h3></legend>';
 		
-		//Prüfen ob Daten eingegeben wurden, wenn ja Übergabe an die Datenbank zur Überprüfung (gehasht)
 		if (isset($_POST['username']) && isset($_POST['passwort']) && $_POST['username'] != "" && $_POST['passwort'] != "")
 		{
 			$_username = $_POST["username"];
 			$_passwort = hash('sha512',$_POST["passwort"]);
 			
-			//SQL Statement
 			$_sql = "SELECT * 
 					FROM 	kunde 
 					WHERE 	username ='$_username'
 					AND 	passwort = '$_passwort';";
-			
-			//	Einbinden der funktionen.php		
+					
 			require_once('funktionen.php');
 		
-			// Ausführen der Datenbankabfrage
 			$_erg = DBQuery($_sql);
-			
-			// Anzahl zurückgegebener Datensätze in die Variable $_anzahl schreiben
 			$_anzahl = @mysqli_num_rows($_erg);	
-			
-			// Wird nur ausgeführt, wenn die Logindaten korrekt sind
 			if($_anzahl > 0)
 			{	
-				// Wenn der User korrekt ist, Weiterleitung auf die Übersichtsseite
 				session_start();
 				$_SESSION['onecert'] = true;
 				$_SESSION['username'] = $_username;
@@ -52,7 +41,6 @@
 			}
 			else
 			{
-				// Username / Passwort nicht bekannt oder falsch
 				echo "<p>Der Username $_username ist nicht bekannt oder es wurde ein falsches Passwort eingegeben!</p>";
 			}
 		}
@@ -81,8 +69,7 @@
 		</table>
 		</form>
       </fieldset>
-	 
-	 <!--Weiterleitung zur Registrierung-->
+	  
 	  <fieldset>  
 		<legend><h3>Registrierung</h3></legend>
 			<p>Noch kein Kunde? Dann geht\'s hier zur Registrierung:</p>

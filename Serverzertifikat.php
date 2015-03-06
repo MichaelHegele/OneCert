@@ -10,24 +10,17 @@
   <h1>OneCert - Bestellung</h1>
   
   <?php
-	// Formular für das Bestellen eines Standard-Zertifikats
-	
-	// Einbinden dere funktionen.php
 	require_once('funktionen.php');
 	checklogin();
 	
-	// Übergabe des Usernamen
 	$_username = $_SESSION['username'];
 	
-	// SQL Statement um Userdaten aus der DB zu holen
 	$_sql = "SELECT * 
 			FROM 	kunde 
 			WHERE 	username ='$_username';";
-		
-	//Ausführen der DB Abfrage
+			
 	$_erg = DBQuery($_sql);
 
-	//Daten des Users aus der DB holen und ausgeben
 	$_daten = mysqli_fetch_array( $_erg, MYSQL_ASSOC);
 	
     echo '<form enctype="multipart/form-data" name="Formular" action="form_order.php" method="post" onsubmit="return chkFormular()">

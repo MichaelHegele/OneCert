@@ -9,9 +9,7 @@
   <body text="#202040" bgcolor="#C0C0C0">
   
   <?php
-	//Übersichtsseite zur Bestellung und Kundenordner im Dateisystem anlegen
-	
-	// Einbinden der Datei funktionen.php 
+  
 	require_once('funktionen.php');
 	checklogin();
   
@@ -19,18 +17,14 @@
 	<h3>Bestell&uuml;bersicht:</h3>
     <ul>';
 
-	// Übergabe Username aus der Sessionvariable zur Anzeige der Kontaktdaten im Bestellformular
 	$_username = $_SESSION['username'];
 	
-	//SQL Statement
 	$_sql = "SELECT * 
 			FROM 	kunde 
 			WHERE 	username ='$_username';";
-	
-	//DB Abfrage
+			
 	$_erg = DBQuery($_sql);
 
-	//Daten aus der DB in ein Array schreiben und Variablen zuordnen
 	$_daten = mysqli_fetch_array( $_erg, MYSQL_ASSOC);
 		  
 	  $_kname = $_daten["kname"];
@@ -43,8 +37,6 @@
 	  $_kregion = $_daten["kregion"];
 	  $_ktelefon = $_daten["ktelefon"];
 	  $_kmail = $_daten["kmail"];
-	  
-	  //POST Variablen zuweisen
 	  
 	  $_ztyp = $_POST["ztype"];
 	  $_zdays = $_POST["zdays"];
@@ -118,27 +110,25 @@
 		mkdir($path, 0700);		 
 	  }
 	  
-	  // Im Kundenordner Zertifikatsordner anlegen, falls noch nicht vorhanden und Laufzeit in Datei schreiben
+	  // Im Kundenordner Zertifikatsordner anlegen, falls noch nicht vorhanden
 	  $uploaddir = "$path/$_ztyp/";
 		  if (!file_exists($uploaddir))
 		  {
 			mkdir($uploaddir, 0700);
-			$dateihandle = fopen("$uploaddir/laufzeit.txt","w");
-			fwrite($dateihandle, $_zdays);
-			fclose($dateihandle);
+			//hier aufruf zur vorläufigen config erstellung 
 		  }
 	  $uploadfile = $uploaddir . basename($_FILES['userfile']['name']);
 	  
 	  // CSR-Datei entgegennehmen, prüfen und speichern  
 			echo '<pre>';
 				if (move_uploaded_file($_FILES['userfile']['tmp_name'], $uploadfile)) {
-					echo "Datei wurde erfolgreich hochgeladen.\n";
+					echo "Datei ist valide und wurde erfolgreich hochgeladen.\n";
 				} else {
-					echo "Es ist ein Fehler aufgetreten! Bitte kontaktieren Sie das OneCert Team.\n";
+					echo "Möglicherweise eine Dateiupload-Attacke!\n";
 				}
 
-				//echo 'Weitere Debugging Informationen:';
-				//print_r($_FILES);
+				echo 'Weitere Debugging Informationen:';
+				print_r($_FILES);
 
 				print "</pre>";
 				echo '<br />
