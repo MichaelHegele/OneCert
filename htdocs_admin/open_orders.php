@@ -6,29 +6,30 @@
     <meta http-equiv="content-type" content="text/html; charset=ISO-8859-1">
   </head>
 
-  <body text="#202040" bgcolor="#C0C0C0">
+  <body text="#202040" bgcolor="F0F8FF">
     <h2>Eingegangene CSR-Bestellungen:</h2>
 
 	<?php
-	require_once('funktionen.php');
-	checklogin();
+	// Diese Seite zeigt den Admins offene CSR Bestellungen an
 	
-	if($_SESSION['username'] != 'admin')
-			{	
-				$_host  = $_SERVER['HTTP_HOST'];
-				$_uri   = rtrim(dirname($_SERVER['PHP_SELF']), '/\\');
-				$_extra = 'uebersicht.php';
-				header("Location: http://$_host$_uri/$_extra");
-				exit;
-			}
+	// Einbinden der Funktionen.php
+	require_once('funktionen.php');
+	
+	// Überprüfen ob ein User eingeloggt ist
+	checklogin();
 	
 	  echo '<form name="Bestellungen" action="open_orders.php" method="post">
       <fieldset>                          
         <table>';
-
+			
+			// Variable path den Kundenordner zuweisen
 			$path = "C:/kunden/orders";
+			
+			// Trennzeichen für eine bessere Übersicht
 			$pre = "";
 			
+			// Schleife um das Verzeichnis orders mit allen Ordnern auszugeben
+			// Wenn csr Dateien gefunden werden, diese mit einem Link versehen um hier Pfad und Dateiname über GET übergeben zu können
 			function getDir($path,$pre) {
 			  $pre.= "-";
 			  $dh = opendir($path);

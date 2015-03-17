@@ -9,7 +9,9 @@
   <body text="#202040" bgcolor="#C0C0C0">
   
   <?php
-  
+	//Übersichtsseite zur Bestellung und Kundenordner im Dateisystem anlegen
+	
+	// Einbinden der Datei funktionen.php 
 	require_once('funktionen.php');
 	checklogin();
   
@@ -17,14 +19,18 @@
 	<h3>Bestell&uuml;bersicht:</h3>
     <ul>';
 
+	// Übergabe Username aus der Sessionvariable zur Anzeige der Kontaktdaten im Bestellformular
 	$_username = $_SESSION['username'];
 	
+	//SQL Statement
 	$_sql = "SELECT * 
 			FROM 	kunde 
 			WHERE 	username ='$_username';";
-			
+	
+	//DB Abfrage
 	$_erg = DBQuery($_sql);
 
+	//Daten aus der DB in ein Array schreiben und Variablen zuordnen
 	$_daten = mysqli_fetch_array( $_erg, MYSQL_ASSOC);
 		  
 	  $_kname = $_daten["kname"];
@@ -38,8 +44,16 @@
 	  $_ktelefon = $_daten["ktelefon"];
 	  $_kmail = $_daten["kmail"];
 	  
+	  //POST Variablen zuweisen
+	  
 	  $_ztyp = $_POST["ztype"];
 	  $_zdays = $_POST["zdays"];
+	  @$san1 = $_POST["san1"];
+	  @$san2 = $_POST["san2"];
+	  @$san3 = $_POST["san3"];
+	  @$san4 = $_POST["san4"];
+	  @$san5 = $_POST["san5"];
+	  @$san6 = $_POST["san6"];
 	  
 	  echo '<fieldset>                              
         <legend><h3>Kontaktdaten:</h3></legend>
@@ -104,31 +118,78 @@
 	  
  
 		// Kundenordner anlegen, falls noch nicht vorhanden
-	  $path = "C:/kunden/orders/$_username";	  
+	  $path = "C:/kunden/orders/$_username";
+	  $file = basename($_FILES['userfile']['name']);
+	  $file = substr($file,0,-4);	  
 	if (!file_exists($path))
 	  {
 		mkdir($path, 0700);		 
 	  }
 	  
-	  // Im Kundenordner Zertifikatsordner anlegen, falls noch nicht vorhanden
+	  // Im Kundenordner Zertifikatsordner anlegen, falls noch nicht vorhanden und Laufzeit in Datei schreiben
 	  $uploaddir = "$path/$_ztyp/";
 		  if (!file_exists($uploaddir))
 		  {
 			mkdir($uploaddir, 0700);
-			//hier aufruf zur vorläufigen config erstellung 
+			$dateihandle = fopen("$uploaddir/$file.lz","w");
+			fwrite($dateihandle, $_zdays);
+			fclose($dateihandle);			
 		  }
+		  else
+		  {
+			$dateihandle = fopen("$uploaddir/$file.lz","w");
+			fwrite($dateihandle, $_zdays);
+			fclose($dateihandle);		 
+		  }
+		  
 	  $uploadfile = $uploaddir . basename($_FILES['userfile']['name']);
+	  
+	  // Prüfen ob SAn, wenn ja Sans in ein Extensionsfile schreiben
+	  
+	  if (strpos($_ztyp,'san') !== false) {
+				
+				$san = "subjectAltName=";
+				
+				if (isset($san1) && $san1 != '')
+				{
+					$san = $san."DNS:$san1";
+				}
+				if (isset($san2) && $san2 != '')
+				{
+					$san = $san.",DNS:$san2";
+				}
+				if (isset($san3) && $san3 != '')
+				{
+					$san = $san.",DNS:$san3";
+				}
+				if (isset($san4) && $san4!= '')
+				{
+					$san = $san.",DNS:$san4";
+				}
+				if (isset($san5) && $san5 != '')
+				{
+					$san = $san.",DNS:$san5";
+				}
+				if (isset($san6) && $san6 != '')
+				{
+					$san = $san.",DNS:$san6";
+				}
+				
+				$dateihandle1 = fopen("$uploaddir/$file.cfg","w");
+				fwrite($dateihandle1, $san);
+				fclose($dateihandle1);
+			}
 	  
 	  // CSR-Datei entgegennehmen, prüfen und speichern  
 			echo '<pre>';
 				if (move_uploaded_file($_FILES['userfile']['tmp_name'], $uploadfile)) {
-					echo "Datei ist valide und wurde erfolgreich hochgeladen.\n";
+					echo "Datei wurde erfolgreich hochgeladen.\n";
 				} else {
-					echo "Möglicherweise eine Dateiupload-Attacke!\n";
+					echo "Es ist ein Fehler aufgetreten! Bitte kontaktieren Sie das OneCert Team.\n";
 				}
 
-				echo 'Weitere Debugging Informationen:';
-				print_r($_FILES);
+				//echo 'Weitere Debugging Informationen:';
+				//print_r($_FILES);
 
 				print "</pre>";
 				echo '<br />

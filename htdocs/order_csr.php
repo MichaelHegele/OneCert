@@ -1,89 +1,45 @@
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
-        "http://www.w3.org/TR/html4/loose.dtd">
+      "http://www.w3.org/TR/html4/loose.dtd">
 <html>
   <head>
-    <title>Registrierung</title>
-    <meta http-equiv="content-type" content="text/html; charset=ISO-8859-1">
+  <meta http-equiv="content-type" content="text/html; charset=windows-1250">
+  <title>OneCert CSR-Generator</title>
   </head>
-
-  <body text="#202040" bgcolor="#C0C0C0">
-    <h2>Onecert Registrierung</h2>
-
-	<?php
-	  
-	  if(isset($_POST["kname"]) && isset($_POST["kvname"]) && isset($_POST["kstrasse"]) && isset($_POST["khausnummer"]) && isset($_POST["kplz"]) && isset($_POST["kort"]) && isset($_POST["kregion"]) && isset($_POST["ktelefon"]) && isset($_POST["kmail"]) && isset($_POST["username"]) && isset($_POST["passwort"]) && isset($_POST["passwortcheck"]) && $_POST["kname"] != "" && $_POST["kvname"] != ""  && $_POST["kstrasse"] != ""  && $_POST["khausnummer"] != ""  && $_POST["kplz"] != ""  && $_POST["kort"] != "" && $_POST["kregion"] != ""  && $_POST["ktelefon"]!= "" && $_POST["kmail"] != ""  && $_POST["username"] != ""  && $_POST["passwort"] != "" && $_POST["passwortcheck"] != "")
-	  {	
-		if($_POST["passwort"] == $_POST["passwortcheck"])
-		{
-			$_kname = $_POST["kname"];
-			$_kvname = $_POST["kvname"];
-			$_kstrasse = $_POST["kstrasse"];
-			$_khausnr = $_POST["khausnummer"];
-			$_kplz = $_POST["kplz"];
-			$_kort = $_POST["kort"];
-			$_kland = $_POST["kland"];
-			$_kregion = $_POST["kregion"];
-			$_ktelefon = $_POST["ktelefon"];
-			$_kmail = $_POST["kmail"];
-			$_username = $_POST["username"];
-			$_passwort = hash('sha512', $_POST["passwort"]);
-			$_passwortcheck = $_POST["passwortcheck"];
-			
-			$_sql = "INSERT INTO `kunde` (`kname` ,`kvname` ,`kstrasse`, `khausnummer`, `kplz`, `kort`, `kland`, `kregion`, `ktelefon`, `kmail`, `username`, `passwort`)
-                 VALUES ('$_kname',  '$_kvname', '$_kstrasse', '$_khausnr', '$_kplz', '$_kort', '$_kland', '$_kregion', '$_ktelefon', '$_kmail', '$_username', '$_passwort')";
-             
-			require_once('funktionen.php');
-            //$_erg = DBQuery($_sql);
-
-				session_start();
-				//$_SESSION['onecert'] = true;
-				
-				$_host  = $_SERVER['HTTP_HOST'];
-				$_uri   = rtrim(dirname($_SERVER['PHP_SELF']), '/\\');
-				$_extra = 'uebersicht.php';
-				header("Location: http://$_host$_uri/$_extra");
-				exit;
-		}
-		else
-		{
-			echo 'Die PasswÃ¶rter mÃ¼ssen &uuml;bereinstimmen!';
-		}
-		
-	  }
-	  else
-	  {
-		  echo 'Bitte alle Felder ausf&uuml;llen!';
-	  }
-	  
-      echo '<form echo $_SERVER["PHP_SELF"]; method="POST" >
-	  
-		<fieldset>  
-		<legend><h3>Kontaktdaten</h3></legend>
-		<table>
+ <body text="#202040" bgcolor="#C0C0C0">
+  
+  <?php
+  
+	//Einbinden der funktionen.php
+	require_once('funktionen.php');
+	checklogin();	
+	
+	// Diese Seite dient zur Generierung eines neuen CSRs
+	//Formular um die benötigten CSR Daten einzugeben und Übergabe an gen_csr
+   echo '<h2>OneCert - CSR Generator</h2>
+	<form name="csrgen" action="gen_csr.php" method="post" onsubmit="return chkFormular()">
+      <fieldset>                              
+        <legend><h3>Bitte geben Sie Ihre Zertifikatsdaten ein:</h3></legend>
+ 		<table>
           <tr>
-            <td style="text-align:right;">Nachname</td>
-            <td><input type="text" name="kname" size="10"/></td>
+            <td style="text-align:right;">Domainname: </td>
+            <td><input type="text" name="cdomain" size="20"/> (bei Wildcard z.B. *.test.com)</td>
           </tr>
 		  <tr>
-            <td style="text-align:right;">Vorname</td>
-            <td><input type="text" name="kvname" size="10"/></td>
+            <td style="text-align:right;">Organisation: </td>
+            <td><input type="text" name="corganisation" size="20"/></td>
           </tr>
 		  <tr>
-            <td style="text-align:right;">Strasse</td>
-            <td><input type="text" name="kstrasse" size="10"/></td>
-			<td style="text-align:right;">Hausnummer</td>
-            <td><input type="text" name="khausnummer" size="10"/></td>
+            <td style="text-align:right;">Abteilung: </td>
+            <td><input type="text" name="cabteilung" size="20"/></td>
 		  </tr>
 		  <tr>
-            <td style="text-align:right;">PLZ</td>
-            <td><input type="text" name="kplz" size="10"/></td>
-			<td style="text-align:right;">Ort</td>
-            <td><input type="text" name="kort" size="10"/></td>
+            <td style="text-align:right;">Bundesland / Provinz: </td>
+            <td><input type="text" name="cprovinz" size="20"/></td>
           </tr>
 		  <tr>
             <td style="text-align:right;">Land</td> 
             <td>
-              <select name="kland" size="1">
+              <select name="cland" size="1">
 				<option value="AF">Afghanistan</option>
 				<option value="EG">&Auml;gypten</option>
 				<option value="AX">Aland</option>
@@ -257,7 +213,7 @@
 				<option value="PL">Polen</option>
 				<option value="PT">Portugal</option>
 				<option value="PR">Puerto Rico</option>
-				<option value="RE">RÃ©union</option>
+				<option value="RE">Réunion</option>
 				<option value="RW">Ruanda</option>
 				<option value="RO">Rum&auml;nien</option>
 				<option value="RU">Russische F&ouml;deration</option>
@@ -265,7 +221,7 @@
 				<option value="ZM">Sambia</option>
 				<option value="WS">Samoa</option>
 				<option value="SM">San Marino</option>
-				<option value="ST">Sao TomÃ© und PrÃ­ncipe</option>
+				<option value="ST">Sao Tomé und Príncipe</option>
 				<option value="SA">Saudi-Arabien</option>
 				<option value="SE">Schweden</option>
 				<option value="CH">Schweiz</option>
@@ -330,40 +286,34 @@
             </td>
           </tr>
 		  <tr>
-            <td style="text-align:right;">Region</td>
-            <td><input type="text" name="kregion" size="10"/></td>
+			<td style="text-align:right;">Ort: </td>
+            <td><input type="text" name="cort" size="20"/></td>		  
+		  </tr>
+		  <tr>
+            <td style="text-align:right;">Schl&uuml;ssel-Gr&ouml;sse:</td>            
+              <td><select name="ckey" size="1">
+				<option value="2048">2048</option>
+				<option value="4096">4096</option>
+				</select>
+			</td>				
           </tr>
 		  <tr>
-            <td style="text-align:right;">Telefonnummer</td>
-            <td><input type="text" name="ktelefon" size="10"/></td>
-          </tr>
-		  <tr>
-            <td style="text-align:right;">Mail</td>
-            <td><input type="text" name="kmail" size="10"/></td>
+            <td style="text-align:right;">E-Mail</td>
+            <td><input type="text" name="cmail" size="20"/></td>
           </tr>
         </table>
-	    </fieldset>
-		<br />
-		<fieldset>
-		<legend><h3>Logindaten</h3></legend>
-			<table>
-				<tr>
-					<td style="text-align:right;">Username:</td>
-					<td><input type="text" name="username" size="10"/></td>
-				</tr>
-				<tr>
-					<td style="text-align:right;">Passwort:</td>
-					<td><input type="password" name="passwort" size="10"/></td>
-				</tr>
-				<tr>
-					<td style="text-align:right;">Passwort BestÃ¤tigung:</td>
-					<td><input type="password" name="passwortcheck" size="10"/></td>
-				</tr>
-			</table>
-		</fieldset>
-		<br />
-		<input type="submit" value="Registrieren" />
-		</form>';
+      </fieldset>
+		
+
+      <br>
+      <input type="submit" value="CSR generieren"/>
+      <input type="reset" value="Verwerfen"/>
+    </form>
+	<br />
+	<fieldset>                          
+			<a href="uebersicht.php">Zur&uuml;ck zur &Uuml;bersicht </a>
+			<a href="logout.php">Logout</a>
+      </fieldset>';
 	?>
-  </body>
+  </body>  
 </html>

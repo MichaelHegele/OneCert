@@ -8,19 +8,30 @@
   <body text="#202040" bgcolor="#C0C0C0">
   
   <?php
+	//Formular für das Bestellen eines SAN Zertifikats
+	
+	// Einbinden der funktionen.php
 	require_once('funktionen.php');
+	
+	// Prüfen ob ein User eingeloggt ist
 	checklogin();
 	
+	//Übergabe Username
 	$_username = $_SESSION['username'];
 	
+	//SQL Statement um Daten des Users aus der Datenbenk zu holen
 	$_sql = "SELECT * 
 			FROM 	kunde 
 			WHERE 	username ='$_username';";
 			
+	//DB Abfrage ausführen		
 	$_erg = DBQuery($_sql);
 
+	// Daten in Array schreiben
 	$_daten = mysqli_fetch_array( $_erg, MYSQL_ASSOC);
-  
+
+	// Daten des Users ausgeben
+	
   echo '<h1>OneCert - Bestellung</h1>
     <form enctype="multipart/form-data" name="Formular" action="form_order.php" method="post" onsubmit="return chkFormular()">
       <fieldset>                              
@@ -367,9 +378,24 @@
 				<option value="1825">5 Jahre</option>
               </select>
 			  <p/>
-            <!--
+            
           </tr>
-        </table> -->
+		  <tr>
+            <h2>Bitte zus&auml;tzliche SANs angeben:</h2>
+			<td style="text-align:right;">DNS 1:</td>
+            <td><input type="text" name="san1" size="20"/></td>
+			<tr><td style="text-align:right;">DNS 2:</td>
+            <td><input type="text" name="san2" size="20"/></td>
+			<td style="text-align:right;">DNS 3:</td>
+            <td><input type="text" name="san3" size="20"/></td>
+			<td style="text-align:right;">DNS 4:</td>
+            <td><input type="text" name="san4" size="20"/></td>
+			<td style="text-align:right;">DNS 5:</td>
+            <td><input type="text" name="san5" size="20"/></td>
+			<td style="text-align:right;">DNS 6:</td>
+            <td><input type="text" name="san6" size="20"/></td>
+		  </tr>
+        </table> 
       </fieldset>
       <br>
 	  <input name="ztype" type="hidden" value="typ_san" />

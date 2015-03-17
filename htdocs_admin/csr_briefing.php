@@ -6,19 +6,13 @@
     <meta http-equiv="content-type" content="text/html; charset=ISO-8859-1">
   </head>
 
-  <body text="#202040" bgcolor="#C0C0C0">
+  <body text="#202040" bgcolor="F0F8FF">
   <?php
+	//Diese Seite dient zur Überprüfung von eingegangenen Bestellungen  
+  
+	// Einbinden der Datei funktionen.php
 	require_once('funktionen.php');
 	checklogin();
-	
-	if($_SESSION['username'] != 'admin')
-			{	
-				$_host  = $_SERVER['HTTP_HOST'];
-				$_uri   = rtrim(dirname($_SERVER['PHP_SELF']), '/\\');
-				$_extra = 'uebersicht.php';
-				header("Location: http://$_host$_uri/$_extra");
-				exit;
-			}
   
     echo '<h2>Bitte pr&uuml;fen Sie den Certificate Signing Request:</h2>
 
@@ -30,14 +24,19 @@
 		$file = $_GET["file"];		
 		$csrpath = $path.$file;
 		echo "<br /><br />";
-		
+		//Auslesen der CSR Daten und Speichern in einem Array
 		$csr = file_get_contents("$csrpath");
 		
 		$array = array();
 		$array = openssl_csr_get_subject($csr);
-
 		
+		//auslesen der bestellten Laufzeit
+		$file1 = substr($file,0,-4);
+		$laufzeit = file("$path$file1.lz");
+		$_zdays = $laufzeit[0];
+		$_zjahr = $_zdays/365;
 		
+		//Prüfen ob Standard, Wild, San
 		if (strpos($csrpath,'typ_standard') !== false) 
 		{
 			$ztype = "Standard Zertifikat";
@@ -50,8 +49,10 @@
 		if (strpos($csrpath,'typ_san') !== false) {
 			$ztype = "SAN Zertifikat";
 			$typ = "san";
+		//auslesen der Sans
+		$san = file("$path/$file1.cfg");
 		}
-
+		//Ausgabe in Tabellenform und Link zum Genehmigen generieren
 		echo "<tr><td>Zertifikatstyp: </td><td> ".@$ztype."</tr></td>";
 		echo "<tr><td>Domainname: </td><td> ".@$array[CN]."</tr></td>";
 		echo "<tr><td>Organisation: </td><td> ".@$array[O]."</tr></td>";
@@ -59,10 +60,17 @@
 		echo "<tr><td>Land: </td><td> ".@$array[C]."</tr></td>";
 		echo "<tr><td>Ort: </td><td> ".@$array[L]."</tr></td>";
 		echo "<tr><td>Region: </td><td> ".@$array[ST]."</tr></td>";
+		echo "<tr><td>Laufzeit: </td><td> ".@$_zdays." Tage - ".@$_zjahr." Jahr(e) </tr></td>";
+		
+		if (strpos($ztype,'SAN') !== false) {
+			echo "<tr><td>SANs: </td><td> ".@$san[0]."</tr></td>";
+		}
 		echo "</table>";
 		echo "<br />";	
-				echo "<fieldset><a href=\"generate_cert.php?path=$path&file=$file&cn=$array[CN]\">Genehmigen / Zertifikat generieren</a>
-					</fieldset>";					
+				echo "<fieldset><a href=\"generate_cert.php?path=$path&file=$file&cn=$array[CN]\">Direkt genehmigen / Zertifikat generieren</a>
+					</fieldset>";
+				echo "<fieldset><a href=\"change_crt.php?path=$path&file=$file&cn=$array[CN]\">Daten ändern / Zertifikat generieren</a>
+					</fieldset>";						
 		echo "<br />";	
 		echo "<fieldset>";
 		System("cmd /c openssl req -in $csrpath -noout -text");	
@@ -74,7 +82,7 @@
 		echo '<fieldset>                          
 			<a href="logout.php">Logout</a>
       </fieldset>';
-	
+
 		?>
 
       </fieldset>
